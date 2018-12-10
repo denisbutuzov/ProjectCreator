@@ -1,2 +1,3 @@
 build
 qtbuild
+*.user
