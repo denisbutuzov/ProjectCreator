@@ -1,6 +1,5 @@
 #include <QFileDialog>
-#include <QFile>
-#include <QDebug>
+#include <QRegularExpression>
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
@@ -11,6 +10,8 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     ui->buttonRun->setDisabled(true);
+
+    docCiphers_ << "V2" << "V1" << "P7";
 }
 
 MainWindow::~MainWindow()
@@ -33,12 +34,41 @@ void MainWindow::on_buttonOpenDir_pressed()
 
 void MainWindow::on_buttonRun_pressed()
 {
-    QDir dir(dirName_);
-    QFileInfoList info = dir.entryInfoList(QDir::Files);
-    int count = 0;
+    getRoundDirs(dirName_);
+}
+
+void MainWindow::getRoundDirs(const QString &dirName, const QString &matchStr)
+{
+    QFileInfoList info = QDir(dirName).entryInfoList(QDir::Dirs|QDir::Files|QDir::NoDotAndDotDot);
     for(const auto &fileInfo : info)
     {
-        QFile::rename(fileInfo.absoluteFilePath(),
-                      fileInfo.absolutePath() + "/" + QString::number(++count) + ".txt");
+        if(fileInfo.isDir())
+        {
+            for(const auto &docCipher : docCiphers_)
+            {
+                QRegularExpressionMatch match = QRegularExpression(docCipher).match(fileInfo.fileName());
+                if(match.hasMatch())
+                {
+                    getRoundDirs(fileInfo.absoluteFilePath(), docCipher);
+                }
+            }
+        }
+        else if(!matchStr.isEmpty())
+        {
+            renameFile(fileInfo.fileName(), fileInfo.absolutePath(), matchStr);
+        }
     }
 }
+
+void MainWindow::renameFile(const QString &fileName, const QString &dirName, const QString &matchStr)
+{
+    QRegularExpressionMatch match = QRegularExpression(matchStr).match(fileName);
+    if(match.hasMatch())
+    {
+        QFile::rename(dirName + "/" + fileName, dirName + "/1.txt");
+    }
+}
+
+
+
+

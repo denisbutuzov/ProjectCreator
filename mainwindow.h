@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QMainWindow>
+#include <QDir>
 
 namespace Ui {
 class MainWindow;
@@ -19,6 +20,12 @@ private slots:
     void on_buttonRun_pressed();
 
 private:
+    void getRoundDirs(const QString &dirName, const QString &matchStr = "");
+    void renameFile(const QString &fileName, const QString &dirName, const QString &matchStr);
+
+private:
     Ui::MainWindow *ui;
     QString dirName_;
+    QStringList docCiphers_;
+    QString projectCipher_;
 };
