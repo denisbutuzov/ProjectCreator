@@ -1,5 +1,6 @@
 #include <QFileDialog>
 #include <QRegularExpression>
+#include <QDebug>
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
@@ -10,6 +11,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     ui->buttonRun->setDisabled(true);
+
 
     docCiphers_ << "V2" << "V1" << "P7";
 }
@@ -69,6 +71,8 @@ void MainWindow::renameFile(const QString &fileName, const QString &dirName, con
     }
 }
 
-
-
-
+void MainWindow::on_table_cellChanged(int row, int column)
+{
+    QTableWidgetItem *item = ui->table->item(row, column);
+    qDebug() << item->text();
+}
