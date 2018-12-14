@@ -7,9 +7,11 @@ SET(CMAKE_AUTOUIC ON)
 SET(Qt5_COMPONENTS Core Gui Widgets)
 FIND_PACKAGE(Qt5 COMPONENTS ${Qt5_COMPONENTS} REQUIRED)
 
-SET(HEADERS mainwindow.h)
+SET(HEADERS mainwindow.h
+            renamer.h)
 
-SET(SOURCES mainwindow.cpp)
+SET(SOURCES mainwindow.cpp
+            renamer.cpp)
 
 SET(FORMS mainwindow.ui)
 

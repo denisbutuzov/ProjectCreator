@@ -14,7 +14,7 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QTableWidget" name="table">
+   <widget class="QTableWidget" name="tableDocs">
     <property name="geometry">
      <rect>
       <x>20</x>
@@ -47,8 +47,8 @@
    <widget class="QPushButton" name="buttonOpenDir">
     <property name="geometry">
      <rect>
-      <x>200</x>
-      <y>260</y>
+      <x>460</x>
+      <y>270</y>
       <width>89</width>
       <height>25</height>
      </rect>
@@ -60,14 +60,24 @@
    <widget class="QPushButton" name="buttonRun">
     <property name="geometry">
      <rect>
-      <x>90</x>
-      <y>260</y>
+      <x>460</x>
+      <y>320</y>
       <width>89</width>
       <height>25</height>
      </rect>
     </property>
     <property name="text">
      <string>Запустить</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="lineEditDir">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>270</y>
+      <width>401</width>
+      <height>25</height>
+     </rect>
     </property>
    </widget>
   </widget>
