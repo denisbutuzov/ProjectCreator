@@ -2,20 +2,24 @@
 #include <QRegularExpression>
 #include <QDir>
 
-#include <QDebug>
-
 #include "renamer.h"
 
-Renamer::Renamer(const QString &rootDir, const QStringList &docs)
+Renamer::Renamer(const QString &rootDir,
+                 const QString &projectCipher,
+                 const QMap<QString, QString> &inventoryNumbers)
     : rootDir_(rootDir)
-    , docs_(docs)
+    , projectCipher_(projectCipher)
+    , inventoryNumbers_(inventoryNumbers)
 {
-
 }
 
 void Renamer::run()
 {
     findDirs();
+    renameDirs();
+    renameFiles();
+
+    delete this;
 }
 
 void Renamer::findDirs()
@@ -23,53 +27,68 @@ void Renamer::findDirs()
     QFileInfoList dirsInfo = QDir(rootDir_).entryInfoList(QDir::Dirs|QDir::NoDotAndDotDot);
     for(const auto &dirInfo : dirsInfo)
     {
-        for(const auto &doc : docs_)
+        for(const auto &doc : inventoryNumbers_.keys())
         {
             QRegularExpressionMatch match = QRegularExpression(doc).match(dirInfo.fileName());
             if(match.hasMatch())
             {
-                dirs_.push_back(dirInfo.fileName());
+                dirs_.insert(doc, dirInfo.absoluteFilePath());
             }
         }
     }
 }
 
-void Renamer::printDirs()
+void Renamer::renameDirs()
 {
-    for(const auto &dir : dirs_)
+    auto dirIter = dirs_.begin();
+    for(auto dirIter = dirs_.begin(); dirIter != dirs_.end(); dirIter++)
     {
-        qDebug() << dir;
+        QString oldName = dirIter.value();
+        QString newName = dirIter.value().replace(QRegularExpression("№\\d+(?=_)"), "№" + inventoryNumbers_[dirIter.key()])
+                                         .replace(QRegularExpression("_.+(?=-" + dirIter.key() + ")"), "_" + projectCipher_);
+        attemptToRename(oldName, newName);
     }
 }
 
-//void Renamer::getRoundDirs(const QString &dirName, const QString &matchStr)
-//{
-//    QFileInfoList info = QDir(dirName).entryInfoList(QDir::Dirs|QDir::Files|QDir::NoDotAndDotDot);
-//    for(const auto &fileInfo : info)
-//    {
-//        if(fileInfo.isDir())
-//        {
-//            for(const auto &docCipher : inventoryNumbers_)
-//            {
-//                QRegularExpressionMatch match = QRegularExpression(docCipher).match(fileInfo.fileName());
-//                if(match.hasMatch())
-//                {
-//                    getRoundDirs(fileInfo.absoluteFilePath(), docCipher);
-//                }
-//            }
-//        }
-//        else if(!matchStr.isEmpty())
-//        {
-//            rename(fileInfo.fileName(), fileInfo.absolutePath(), matchStr);
-//        }
-//    }
-//}
+void Renamer::renameFiles()
+{
+    auto dirIter = dirs_.begin();
+    for(auto dirIter = dirs_.begin(); dirIter != dirs_.end(); dirIter++)
+    {
+        renameFilesInDir(dirIter.key(), dirIter.value());
+    }
+}
 
-//void Renamer::rename(const QString &fileName, const QString &dirName, const QString &matchStr)
-//{
-//    QRegularExpressionMatch match = QRegularExpression(matchStr).match(fileName);
-//    if(match.hasMatch())
-//    {
-//        QFile::rename(dirName + "/" + fileName, dirName + "/1.txt");
-//    }
-//}
+void Renamer::renameFilesInDir(const QString &doc, const QString &dirName)
+{
+    QFileInfoList info = QDir(dirName).entryInfoList(QDir::Dirs|QDir::Files|QDir::NoDotAndDotDot);
+    for(const auto &fileInfo : info)
+    {
+        if(fileInfo.isDir())
+        {
+            renameFilesInDir(doc, fileInfo.absoluteFilePath());
+        }
+        else
+        {
+            QRegularExpressionMatch match = QRegularExpression(doc).match(fileInfo.fileName());
+            if(match.hasMatch())
+            {
+                QString oldName = fileInfo.absoluteFilePath();
+                QString newName = fileInfo.absolutePath() + "/" + fileInfo.fileName().replace(QRegularExpression("^.+(?=-" + doc + ")"), projectCipher_);
+                attemptToRename(oldName, newName);
+            }
+        }
+    }
+}
+
+void Renamer::attemptToRename(const QString &oldName, const QString &newName)
+{
+    if(QFile::rename(oldName, newName))
+    {
+        emit renamed(oldName, newName);
+    }
+    else
+    {
+        emit noRenamed(oldName);
+    }
+}

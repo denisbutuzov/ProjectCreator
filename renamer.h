@@ -1,25 +1,33 @@
 #pragma once
 
-#include <QStringList>
+#include <QMap>
+#include <QObject>
 
 class Renamer
+        : public QObject
 {
+    Q_OBJECT
+
 public:
-    Renamer(const QString &rootDir, const QStringList &docs);
+    Renamer(const QString &rootDir,
+            const QString &projectCipher,
+            const QMap<QString, QString> &inventoryNumbers);
     void run();
-    void printDirs();
+
+signals:
+    void renamed(const QString &oldName, const QString &newName);
+    void noRenamed(const QString &name);
 
 private:
     void findDirs();
-
-
-//    void getRoundDirs(const QString &dirName, const QString &matchStr = "");
-//    void rename(const QString &fileName, const QString &dirName, const QString &matchStr);
+    void renameDirs();
+    void renameFiles();
+    void renameFilesInDir(const QString &doc, const QString &dirName);
+    void attemptToRename(const QString &oldName, const QString &newName);
 
 private:
     QString rootDir_;
-    QStringList docs_;
-
-//    QString projectCipher_;
-//    QStringList inventoryNumbers_;
+    QString projectCipher_;
+    QMap<QString, QString> inventoryNumbers_;
+    QMap<QString, QString> dirs_;
 };
