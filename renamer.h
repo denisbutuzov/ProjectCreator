@@ -19,7 +19,7 @@ private:
 private:
     QString rootDir_;
     QStringList docs_;
-    QStringList dirs_;
+
 //    QString projectCipher_;
 //    QStringList inventoryNumbers_;
 };
