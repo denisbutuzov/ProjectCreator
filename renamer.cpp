@@ -77,7 +77,7 @@ void Renamer::renameFilesInDir(const QString &doc, const QString &dirName)
             if(match.hasMatch())
             {
                 QString oldName = fileInfo.absoluteFilePath();
-                QString newName = fileInfo.absolutePath() + "/" + fileInfo.fileName().replace(QRegularExpression("^.+(?=-" + doc + ")"), projectCipher_);
+                QString newName = fileInfo.absolutePath() + SEPARATOR + fileInfo.fileName().replace(QRegularExpression("^.+(?=-" + doc + ")"), projectCipher_);
                 if(oldName != newName)
                 {
                     attemptToRename(oldName, newName);
