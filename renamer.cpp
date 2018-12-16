@@ -46,7 +46,10 @@ void Renamer::renameDirs()
         QString oldName = dirIter.value();
         QString newName = dirIter.value().replace(QRegularExpression("№\\d+(?=_)"), "№" + inventoryNumbers_[dirIter.key()])
                                          .replace(QRegularExpression("_.+(?=-" + dirIter.key() + ")"), "_" + projectCipher_);
-        attemptToRename(oldName, newName);
+        if(oldName != newName)
+        {
+            attemptToRename(oldName, newName);
+        }
     }
 }
 
@@ -75,7 +78,10 @@ void Renamer::renameFilesInDir(const QString &doc, const QString &dirName)
             {
                 QString oldName = fileInfo.absoluteFilePath();
                 QString newName = fileInfo.absolutePath() + "/" + fileInfo.fileName().replace(QRegularExpression("^.+(?=-" + doc + ")"), projectCipher_);
-                attemptToRename(oldName, newName);
+                if(oldName != newName)
+                {
+                    attemptToRename(oldName, newName);
+                }
             }
         }
     }
