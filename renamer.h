@@ -3,6 +3,12 @@
 #include <QMap>
 #include <QObject>
 
+#ifdef WINDOWS
+   #define SEPARATOR "\\"
+#else
+   #define SEPARATOR "/"
+#endif
+
 class Renamer
         : public QObject
 {
