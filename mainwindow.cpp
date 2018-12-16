@@ -12,7 +12,11 @@ MainWindow::MainWindow(QWidget *parent) :
     setFixedSize(560, 560);
 
     ui->buttonRun->setDisabled(true);
+
     ui->lineEditDir->setReadOnly(true);
+    ui->lineEditDir->setFocusPolicy(Qt::FocusPolicy::NoFocus);
+
+    ui->textEdit->setReadOnly(true);
 
     setupTable(ui->tableDocs1);
     setupTable(ui->tableDocs2);
@@ -53,6 +57,7 @@ void MainWindow::setupTable(QTableWidget *table)
 {
     table->setColumnWidth(0, 150);
     table->setSelectionMode(QAbstractItemView::NoSelection);
+    table->verticalHeader()->setSectionResizeMode(QHeaderView::Fixed);
 }
 
 void MainWindow::addInventoryNumberToMap(QTableWidget *table, int row, int column)
