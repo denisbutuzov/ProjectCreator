@@ -1,0 +1,34 @@
+CMAKE_MINIMUM_REQUIRED(VERSION 3.1)
+PROJECT(ProjectCreator)
+
+SET(CMAKE_AUTOMOC ON)
+SET(CMAKE_AUTOUIC ON)
+
+OPTION(WINDOWS "Build for Windows system" OFF)
+
+IF(WINDOWS)
+    MESSAGE(STATUS "Build for Windows system")
+    ADD_DEFINITIONS(-DWINDOWS)
+ELSE(WINDOWS)
+    MESSAGE(STATUS "Build for Linux system")
+ENDIF(WINDOWS)
+
+SET(Qt5_COMPONENTS Core Gui Widgets)
+FIND_PACKAGE(Qt5 COMPONENTS ${Qt5_COMPONENTS} REQUIRED)
+
+SET(HEADERS mainwindow.h
+            renamer.h)
+
+SET(SOURCES mainwindow.cpp
+            renamer.cpp)
+
+SET(FORMS mainwindow.ui)
+
+SET(LIBS Qt5::Core
+         Qt5::Gui
+         Qt5::Widgets
+)
+
+ADD_EXECUTABLE(${PROJECT_NAME} main.cpp ${SOURCES} ${HEADERS} ${FORMS})
+TARGET_LINK_LIBRARIES(${PROJECT_NAME}  PUBLIC ${LIBS})
+TARGET_INCLUDE_DIRECTORIES(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
